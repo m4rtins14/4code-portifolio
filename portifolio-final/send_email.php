@@ -1,31 +1,36 @@
 <?php
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Pega os dados do formulário
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Captura os dados do formulário
     $nome = htmlspecialchars($_POST['nome']);
-    $email = htmlspecialchars($_POST['email']);
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
     $celular = htmlspecialchars($_POST['celular']);
     $mensagem = htmlspecialchars($_POST['mensagem']);
 
-    // Seu e-mail
-    $para = "juliamartinsdesouza33@gmail.com";
-    $assunto = "Nova mensagem do formulário de contato";
+    // Verifica se o e-mail é válido
+    if (!$email) {
+        echo "Endereço de e-mail inválido.";
+        exit;
+    }
 
-    // Mensagem que será enviada
-    $mensagem_email = "Nome: $nome\n";
-    $mensagem_email .= "E-mail: $email\n";
-    $mensagem_email .= "Celular: $celular\n";
-    $mensagem_email .= "Mensagem: \n$mensagem\n";
-
-    // Cabeçalhos do e-mail
-    $headers = "From: $email";
+    // Configuração do e-mail
+    $to = "juliamartinsdesouza33@gmail.com"; // Substitua pelo seu e-mail
+    $subject = "Nova mensagem do site 4CODE";
+    $body = "
+        Nome: $nome\n
+        E-mail: $email\n
+        Celular: $celular\n
+        Mensagem:\n$mensagem
+    ";
+    $headers = "From: $email\r\n";
+    $headers .= "Reply-To: $email\r\n";
 
     // Envia o e-mail
-    if (mail($para, $assunto, $mensagem_email, $headers)) {
+    if (mail($to, $subject, $body, $headers)) {
         echo "Mensagem enviada com sucesso!";
     } else {
-        echo "Falha ao enviar a mensagem. Tente novamente.";
+        echo "Erro ao enviar a mensagem. Tente novamente mais tarde.";
     }
 } else {
-    echo "Método de envio inválido.";
+    echo "Método inválido.";
 }
 ?>
